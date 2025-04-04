@@ -1,9 +1,9 @@
 import Button from "@/components/Button";
 import { useAuth } from "@/context/AuthContext";
-import { FlatList, SafeAreaView, Text, View } from "react-native";
+import { FlatList, RefreshControl, SafeAreaView, Text, View } from "react-native";
 import * as SecurStorage from 'expo-secure-store';
 import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Task } from "@/constants/interfaces";
 import { BASE_URL } from "@/constants/urls";
 import TaskCard from "@/components/TaskCard";
@@ -13,6 +13,7 @@ const Tasks = () => {
     const {signOut} = useAuth();
     const {id} = useLocalSearchParams();
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
 
     useEffect(() => {
         fetchData();
@@ -58,6 +59,12 @@ const Tasks = () => {
         }
     }
 
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchData();
+        setRefreshing(false);
+    }, []);
+
     const handleLogout = async () => {
         await Promise.all([
             SecurStorage.deleteItemAsync('token'),
@@ -73,6 +80,7 @@ const Tasks = () => {
                 data={tasks}
                 keyExtractor={(item) => item.id}
                 renderItem={({item}) => <TaskCard item={item} />}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 ListEmptyComponent={<ListEmptyComponent title="No tasks found, click on the button below to get next task" />}
             />
             <View className="mt-2">
