@@ -55,6 +55,28 @@ export const useNotifications = (): NotificationState => {
         });
       }
 
+      Notifications.setNotificationCategoryAsync(
+        'ACTIONABLE',
+        [
+          {
+            buttonTitle: "Done",
+            identifier: 'DONE',
+            options: {
+              isAuthenticationRequired: false, 
+              isDestructive: true,
+            }
+          },
+          {
+            identifier: 'SKIP',
+            buttonTitle: "Skip",
+            options: {
+              isAuthenticationRequired: false, 
+              isDestructive: true,
+            }
+          }
+        ]
+      );
+
       if(Device.isDevice) {
 
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
