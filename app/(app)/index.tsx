@@ -5,6 +5,8 @@ import { useState } from "react";
 import { ScrollView, Text, View, SafeAreaView, FlatList, Pressable } from "react-native";
 import * as SecureStore from 'expo-secure-store';
 import { TaskRoom } from "@/constants/interfaces";
+import RoomCard from "@/components/RoomCard";
+import ListEmptyComponent from "@/components/EmptyComponent";
 
 const Rooms = () => {
     const [rooms, setRooms] = useState<TaskRoom[]>([]);
@@ -30,16 +32,15 @@ const Rooms = () => {
         }
     }
 
+    const openRoomDetail = () => router
+
     return <SafeAreaView className="flex-1">
         <View className="flex-1 px-5">
             <FlatList 
                 data={rooms}
                 keyExtractor={(item) => item.id}
-                renderItem={({item}) => (
-                    <Pressable className="p-5 border border-gray-400 rounded-lg mt-2">
-                        <Text className="font-bold">{item.id}</Text>
-                    </Pressable>
-                )}
+                renderItem={({item}) => <RoomCard item={item} />}
+                ListEmptyComponent={<ListEmptyComponent title="No rooms found, click on the button below to create a room" />}
             />
             <View className="mt-2">
                 <Button title={"Create Room"} onPress={createRoom} />

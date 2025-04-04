@@ -17,6 +17,6 @@ export default function AppLayout () {
 
     return <Stack>
         <Stack.Screen name="index"  options={{title: "Rooms"}}/>
-        <Stack.Screen name="tasks" options={{title: 'Task List'}} />
+        <Stack.Screen name="tasks/[id]" options={{title: 'Task List'}} />
     </Stack>
 }
