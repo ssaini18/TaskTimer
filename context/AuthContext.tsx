@@ -2,13 +2,7 @@ import { router } from "expo-router";
 import { ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from "react";
 import * as SecureStore from 'expo-secure-store';
-
-interface AuthContextType {
-    loading: boolean,
-    isAuthenticated: boolean,
-    signIn: () => void,
-    signOut: () => void
-}
+import { AuthContextType } from "@/constants/interfaces";
 
 const AuthContext = createContext<AuthContextType>({
     loading: false,

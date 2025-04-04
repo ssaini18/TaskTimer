@@ -5,7 +5,7 @@ interface CustomTextInputProps {
     onChangeText?: (text: string) => void;
     secureTextEntry?: boolean;
     placeholder?: string;
-  }
+}
   
 
 const CustomTextInput = ({value, placeholder, onChangeText, secureTextEntry = false}: CustomTextInputProps) => {
