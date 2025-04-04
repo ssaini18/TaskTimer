@@ -8,6 +8,7 @@ import { Task } from "@/constants/interfaces";
 import { BASE_URL } from "@/constants/urls";
 import TaskCard from "@/components/TaskCard";
 import ListEmptyComponent from "@/components/EmptyComponent";
+import * as Notifications from 'expo-notifications';
 
 const Tasks = () => {
     const {signOut} = useAuth();
@@ -51,6 +52,9 @@ const Tasks = () => {
 
             if(response.status == 200) {
                 setTasks(prev => [...prev, data]);
+                let {hours, minutes, seconds} = data.starts_in;
+                let time = 3600*hours + minutes*60 + seconds;
+                await schedulePushNotification(time, data.title); 
             } else if(response.status == 401) {
                 //refresh token
             }
@@ -65,13 +69,17 @@ const Tasks = () => {
         setRefreshing(false);
     }, []);
 
-    const handleLogout = async () => {
-        await Promise.all([
-            SecurStorage.deleteItemAsync('token'),
-            SecurStorage.deleteItemAsync('refreshToken')
-        ]);
-        signOut();
-    }
+    const schedulePushNotification = async (time: number, title: string) => {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+            seconds: time,
+          },
+        });
+      }
 
     return <SafeAreaView className="flex-1">
         <View className="flex-1 px-5 pt-2">

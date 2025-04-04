@@ -16,6 +16,7 @@ const CustomTextInput = ({value, placeholder, onChangeText, secureTextEntry = fa
         onChangeText={onChangeText} 
         placeholder={placeholder}
         secureTextEntry={secureTextEntry}
+        placeholderTextColor="#000" 
     />
 }
 

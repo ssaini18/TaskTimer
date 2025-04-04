@@ -37,7 +37,11 @@ export const AuthProvider = ({children}: {children: ReactNode}): ReactNode => {
         router.replace('/');
     }, []);
 
-    const signOut = useCallback(() => {
+    const signOut = useCallback(async () => {
+        await Promise.all([
+            SecureStore.deleteItemAsync('token'),
+            SecureStore.deleteItemAsync('refreshToken')
+        ]);
         setIsAuthenticated(false);
         router.replace('/login');
     }, []);

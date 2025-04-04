@@ -1,9 +1,11 @@
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/hooks/useNotifications";
 import { Redirect, Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 
 export default function AppLayout () {
     const {loading, isAuthenticated} = useAuth();
+    const {expoPushToken, notification} = useNotifications();
 
     if(loading) {
         return <View className="flex-1 justify-center items-center">
