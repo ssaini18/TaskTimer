@@ -1,12 +1,14 @@
 import { useAuth } from "@/context/AuthContext";
 import { Redirect, Stack } from "expo-router";
-import { Text } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 export default function AppLayout () {
     const {loading, isAuthenticated} = useAuth();
 
     if(loading) {
-        return <Text>Loading..........</Text>
+        return <View className="flex-1 justify-center items-center">
+            <ActivityIndicator />
+        </View>
     }
 
     if(!isAuthenticated) {
