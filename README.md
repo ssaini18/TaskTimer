@@ -30,8 +30,8 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 1. Login
 
-![Image](https://github.com/user-attachments/assets/2c71797f-6e4a-444f-ab87-bc9de660b4d5)
+![Image](https://github.com/user-attachments/assets/c7f61e8e-f649-4fa0-a406-6bc09c2116e6)
 
 2. Create room, open room and get new task, push notification with action buttons and pull to refresh
 
-![Image](https://github.com/user-attachments/assets/2f703493-e2ad-4cae-a277-b0a82e6560d9)
+![Image](https://github.com/user-attachments/assets/f713694c-546d-4f6b-85a4-3c190a112bd0)
