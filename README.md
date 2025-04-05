@@ -16,35 +16,22 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
     npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Technical decisions
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1. There were two options to show rooms and their related task, one was to show a section type list with title as room id and tasks as children other was to create separate page for rooms list and task list
+2. Created separate page as with this approach we only have to get list of tasks if user clicks on room and navigate to tasks list page 
+3. Less api calls as we dont have to load all the tasks we only load task as users need which is only one api calls
+4. Pull to refresh is also single api call 
+5. We show user only the tasks that he want to see instead of showing a long list of tasks that user is not interested in
+6. Also works good with deep linking as we can open a certain room if we want with this approach
+7. Created reusable components, helper functions for better reusability
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## App Demo
 
-## Get a fresh project
+1. Login
 
-When you're ready, run:
+![Image](https://github.com/user-attachments/assets/2c71797f-6e4a-444f-ab87-bc9de660b4d5)
 
-```bash
-npm run reset-project
-```
+2. Create room, open room and get new task, push notification with action buttons and pull to refresh
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+![Image](https://github.com/user-attachments/assets/2f703493-e2ad-4cae-a277-b0a82e6560d9)
