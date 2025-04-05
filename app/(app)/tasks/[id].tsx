@@ -1,20 +1,21 @@
 import Button from "@/components/Button";
-import { useAuth } from "@/context/AuthContext";
 import { FlatList, RefreshControl, SafeAreaView, Text, View } from "react-native";
 import * as SecurStorage from 'expo-secure-store';
-import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
+import { useLocalSearchParams } from "expo-router/build/hooks";
 import { useCallback, useEffect, useState } from "react";
 import { Task } from "@/constants/interfaces";
-import { BASE_URL } from "@/constants/urls";
 import TaskCard from "@/components/TaskCard";
 import ListEmptyComponent from "@/components/EmptyComponent";
 import * as Notifications from 'expo-notifications';
+import { get } from "@/utility/apiHelper";
+import { useAuth } from "@/context/AuthContext";
 
 const Tasks = () => {
-    const {signOut} = useAuth();
     const {id} = useLocalSearchParams();
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
+    const {signOut} = useAuth();
 
     useEffect(() => {
         fetchData();
@@ -22,44 +23,36 @@ const Tasks = () => {
 
     const fetchData = async () => {
         try {
+            setLoading(true);
             let token = await SecurStorage.getItemAsync('token');
-            let response = await fetch(`${BASE_URL}/api/tasks/${id}`, {
-                headers: {
-                    "Authorization": "Bearer "+token
-                }
-            });
-            let data = await response.json();
-
-            if(response.status == 200) {
-                setTasks(data);
-            } else if(response.status == 401) {
-                //refresh token
-            }
+            let taskList = await get<Task[]>(`/api/tasks/${id}`, token);
+            setTasks(taskList)
         } catch (error) {
+            if(error = 'Invalid refresh token') {
+                signOut();
+            }
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
 
     const getNextTask = async () => {
         try {
+            setLoading(true);
             let token = await SecurStorage.getItemAsync('token');
-            let response = await fetch(`${BASE_URL}/api/tasks/new/${id}`, {
-                headers: {
-                    "Authorization": "Bearer "+token
-                }
-            });
-            let data = await response.json();
-
-            if(response.status == 200) {
-                setTasks(prev => [...prev, data]);
-                let {hours, minutes, seconds} = data.starts_in;
-                let time = 3600*hours + minutes*60 + seconds;
-                await schedulePushNotification(time, data.title);
-            } else if(response.status == 401) {
-                //refresh token
-            }
+            let newTask = await get<Task>(`/api/tasks/new/${id}`, token);
+            setTasks((prev) => [...prev, newTask]);
+            let {hours, minutes, seconds} = newTask.starts_in;
+            let time = 3600*hours + minutes*60 + seconds;
+            await schedulePushNotification(time, newTask.title);
         } catch (error) {
+            if(error = 'Invalid refresh token') {
+                signOut();
+            }
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -93,7 +86,7 @@ const Tasks = () => {
                 ListEmptyComponent={<ListEmptyComponent title="No tasks found, click on the button below to get next task" />}
             />
             <View className="mt-2">
-                <Button title={"Get Next Task"} onPress={getNextTask} />
+                <Button title={"Get Next Task"} onPress={getNextTask} disabled={loading} />
             </View>
         </View>
     </SafeAreaView>

@@ -22,3 +22,17 @@ export interface AuthContextType {
     signIn: () => void,
     signOut: () => void
 }
+
+export interface LoginRequestBody {
+    username: string;
+    password: string;
+}
+
+export interface LoginSuccessResponse {
+    access_token: string;
+    refresh_token: string;
+}
+
+export interface LoginFailResponse {
+    detail: string
+}

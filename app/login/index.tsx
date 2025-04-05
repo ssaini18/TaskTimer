@@ -1,10 +1,11 @@
 import Button from "@/components/Button"
 import CustomTextInput from "@/components/TextInput";
-import { BASE_URL } from "@/constants/urls";
 import { useAuth } from "@/context/AuthContext"
 import { useState } from "react";
 import { Text, View } from "react-native";
 import * as SecureStorage from 'expo-secure-store';
+import { post } from "@/utility/apiHelper";
+import { LoginFailResponse, LoginRequestBody, LoginSuccessResponse } from "@/constants/interfaces";
 
 const Login = () => {
     const {signIn} = useAuth();
@@ -12,28 +13,19 @@ const Login = () => {
     const [password, setPassword] = useState<string>("");
 
     const handleSignIn = async () => {
-        console.log(`${username}-${password}`);
         try {
-            const response = await fetch(BASE_URL+'/api/auth/login', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ username, password }),
-            });
+            let body = {username, password};
+            let response = await post<LoginRequestBody, LoginSuccessResponse | LoginFailResponse>('/api/auth/login', body);
 
-            const data = await response.json();
-    
-            if(response.status != 200) {
-                alert(data.detail);
+            if('detail' in response) {
+                alert(response.detail);
             } else {
                 await Promise.all([
-                    SecureStorage.setItemAsync('token', data.access_token),
-                    SecureStorage.setItemAsync('refreshToken', data.refresh_token)
+                    SecureStorage.setItemAsync('token', response.access_token),
+                    SecureStorage.setItemAsync('refreshToken', response.refresh_token)
                 ]);
                 signIn();
             }
-
         } catch (error) {
             console.log(error);
         }

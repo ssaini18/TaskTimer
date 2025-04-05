@@ -1,16 +1,17 @@
 import Button from "@/components/Button"
-import { BASE_URL } from "@/constants/urls";
-import { router, useNavigation } from "expo-router";
+import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, View, SafeAreaView, FlatList, Pressable } from "react-native";
+import { Text, View, SafeAreaView, FlatList, Pressable } from "react-native";
 import * as SecureStore from 'expo-secure-store';
 import { TaskRoom } from "@/constants/interfaces";
 import RoomCard from "@/components/RoomCard";
 import ListEmptyComponent from "@/components/EmptyComponent";
 import { useAuth } from "@/context/AuthContext";
+import { get } from "@/utility/apiHelper";
 
 const Rooms = () => {
     const [rooms, setRooms] = useState<TaskRoom[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const {signOut} = useAuth();
     const navigation = useNavigation();
 
@@ -18,26 +19,21 @@ const Rooms = () => {
         navigation.setOptions({
             headerRight: () => <Pressable onPress={signOut}><Text>Logout</Text></Pressable>
         })
-    }, [navigation])
+    }, [navigation]);
 
     const createRoom = async () => {
         try {
+            setLoading(true);
             let token = await SecureStore.getItemAsync('token');
-            let response = await fetch(BASE_URL+'/api/tasks/new', {
-                headers: {
-                    "Authorization": "Bearer "+token
-                }
-            });
-            const data = await response.json();
-
-            if(response.status == 200) {
-                setRooms(prev => [...prev, data]);
-            } else if(response.status == 401) {
-                //refresh token
-            }
-
+            let newRoom = await get<TaskRoom>('/api/tasks/new', token);
+            setRooms((prev) => [...prev, newRoom]);
         } catch (error) {
+            if(error = 'Invalid refresh token') {
+                signOut();
+            }
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -50,7 +46,7 @@ const Rooms = () => {
                 ListEmptyComponent={<ListEmptyComponent title="No rooms found, click on the button below to create a room" />}
             />
             <View className="mt-2">
-                <Button title={"Create Room"} onPress={createRoom} />
+                <Button title={"Create Room"} onPress={createRoom} disabled={loading} />
             </View>
         </View>
     </SafeAreaView>
